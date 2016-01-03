@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Denver Marijuana Facilities</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <link href="leaflet.css" rel="stylesheet">
+    <!-- http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css -->
+    <link href='https://fonts.googleapis.com/css?family=Vollkorn:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="http://extras.denverpost.com/transgender/css/foundation.min.css" />
+    <link rel="stylesheet" href="http://extras.denverpost.com/transgender/css/normalize.css" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js">
+    </script>
+    <script src="js/leaflet-grouped-layer-control.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js">
+    </script>
+    <style type="text/css">
+        #container {
+        	margin: 10px;
+        }
+        #map {
+            height: 750px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .leaflet-control-layers-group-name {
+            font-weight: bold;
+            margin-bottom: .2em;
+            display: block;
+        }
+        .leaflet-control-layers-group {
+            margin-bottom: .5em;
+        }
+        .leaflet-control-layers-group label {
+            padding-left: .5em;
+        }
+        #legend-container {
+        	border: 1px solid lightgray;
+        	padding: 10px;
+        }
+        .legend-spacing {
+        	margin-bottom: 15px;
+        }
+        .legend-title {
+            font-family: Helvetica, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            line-height: 15px;
+        }
+        ul.legend { 
+            list-style: none;
+            margin-left: 0px;
+        }
+        .legend li {
+            float: left;
+            font-family: Helvetica, sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            width: 16%;
+        }
+        .legend span {
+            border: 1px solid #ccc;
+            float: left;
+            width: 100%;
+            height: 25px;
+            text-align: center;
+            padding-top: 2px;
+            color: lightgray;
+        }
+        .legend .step-10 {
+            background-color: #54278f;
+        }
+        .legend .step-9 {
+            background-color: #756bb1;
+        }
+        .legend .step-8 {
+            background-color: #9e9ac8;
+        }
+        .legend .step-7 {
+            background-color: #cbc9e2;
+        }
+        .legend .step-6 {
+            background-color: #f2f0f7;
+        }
+        .legend .step-5 {
+            background-color: #a63603;
+        }
+        .legend .step-4 {
+            background-color: #e6550d;
+        }
+        .legend .step-3 {
+            background-color: #fd8d3c;
+        }
+        .legend .step-2 {
+            background-color: #fdbe85;
+        }
+        .legend .step-1 {
+            background-color: #feedde;
+        }
+        hr {
+            margin: 5px 0px 5px 0px;
+        }
+        hr.not-popup {
+            margin-bottom: 18px;
+        }
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            line-height: 48px;
+            margin-bottom: 10px;
+        }
+        .icon-store {
+            width: 12px;
+            height: 12px;
+            border-radius: 10px;
+            background-color: rgba(227,26,28,1.0);
+            border: 1px solid #ccc;
+        }
+        #icon-store-legend { 
+            width: 12px; 
+            height: 12px; 
+            background-color: rgba(227,26,28,1.0); 
+            border: 1px solid rgba(0,0,0,0.7);
+            -moz-border-radius: 6px; 
+            -webkit-border-radius: 6px; 
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .icon-cultivation {
+            width: 12px;
+            height: 12px;
+            border-radius: 10px;
+            background-color: rgba(31,120,180,1.0);
+            border: 1px solid #ccc;
+        }
+        #icon-cultivation-legend { 
+            width: 12px; 
+            height: 12px; 
+            background-color: rgba(31,120,180,1.0);
+            border: 1px solid rgba(0,0,0,0.7);
+            -moz-border-radius: 6px; 
+            -webkit-border-radius: 6px; 
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .icon-manufacturing {
+            width: 12px;
+            height: 12px;
+            border-radius: 10px;
+            background-color: rgba(0,0,0,1.0);
+            border: 1px solid #ccc;
+        }
+        #icon-manufacturing-legend { 
+            width: 12px; 
+            height: 12px; 
+            background-color: rgba(0,0,0,1.0);
+            border: 1px solid rgba(0,0,0,0.7);
+            -moz-border-radius: 6px; 
+            -webkit-border-radius: 6px; 
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .icon-test-facility {
+            width: 12px;
+            height: 12px;
+            border-radius: 10px;
+            background-color: rgba(255,255,153,1.0);
+            border: 1px solid #ccc;
+        }
+        #icon-test-facility-legend { 
+            width: 12px; 
+            height: 12px; 
+            background-color: rgba(255,255,153,1.0);
+            border: 1px solid rgba(0,0,0,0.7);
+            -moz-border-radius: 6px; 
+            -webkit-border-radius: 6px; 
+            border-radius: 6px;
+            display: inline-block;
+        }
+        @media (max-width: 500px) {
+			#map {
+				height: 500px;
+			} 
+		}
+
+    </style>
+</head>
+<body>
+    <div id="container">
+    <div class="row">
+        <div class="large-12 columns">
+            <h1>MARIJUANA IN DENVER: AN INDUSTRY GROWS</h1>
+            <p>A Denver Post analysis of marijuana-related business license records shows there are more than 600 entities operating within city limits, including medical and retail stores, cultivation centers, edible manufacturers and testing facilities. Businesses are concentrated in the northern and western areas of the city, mainly due to zoning restrictions and available warehouse space for cultivation operations. The three neighborhoods that house the highest number of businesses are Elyria Swansea (78), Northeast Park Hill (67) and Montbello (52).</p>
+            <hr class="not-popup">
+            <p><strong><span style="color: rgba(227,26,28,1.0)">HOW TO USE THE MAP</span></strong> Click the red icon in the top right corner of the map to add and remove features, including locations of marijuana facilities, schools, Census income and population data, and zoning overlays. Toggle facility types to reveal overlapping map markers <a href="#overlapping-markers">(more about this)</a>. Click a neighborhood, Census tract or map marker for details. <em>Read about our methodology and <a href="#methodology">why our numbers are different than the city's.</a></em></p>
+        </div>
+    </div>
+
+	<div class="row" id="legend-container">
+    	<div class="large-4 medium-4 columns legend-spacing">
+    	    <div id="dot-legend">
+                <p class="legend-title">MARIJUANA FACILITY TYPES</p>
+                <div id="icon-store-legend"></div> Store<br>
+                <div id="icon-cultivation-legend"></div> Cultivation facility</br>
+                <div id="icon-manufacturing-legend"></div> Manufacturing facility</br>
+                <div id="icon-test-facility-legend"></div> Testing facility</br>
+            </div>
+        </div>
+        <div class="large-4 medium-4 columns legend-spacing">
+            <div id="facilities-number">
+                <p class="legend-title">NUMBER OF MARIJUANA<br>BUSINESSES</p>
+                <ul class="legend">
+                    <li><span>0</span></li>
+                    <li><span class="step-1"></span></li>
+                    <li><span class="step-2"></span></li>
+                    <li><span class="step-3"></span></li>
+                    <li><span class="step-4"></span></li>
+                    <li><span class="step-5">78</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="large-4 medium-4 columns legend-spacing">
+            <div id="median-income">
+                <p class="legend-title">MEDIAN HOUSEHOLD<br>INCOME</p>
+                <ul class="legend">
+                    <li><span>0</span></li>
+                    <li><span class="step-6"></span></li>
+                    <li><span class="step-7"></span></li>
+                    <li><span class="step-8"></span></li>
+                    <li><span class="step-9"></span></li>
+                    <li><span class="step-10">$158K</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="large-12 columns">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="large-12 columns">
+                <div class="legend-container">
+                    <p style="font-style: italic; text-align: right;">Sources: City and County of Denver Dept. of Excise and License, Colorado Dept. of Education, U.S. Census</p>
+                    <p id="methodology"><strong>OUR METHODOLOGY</strong> The Denver Post analyzed marijuana-related business license information from the City and County of Denver Department of Excise and Licenses. The analysis resulted in a higher number of distinct marijuana business locations <a href="http://denvergov.org/content/denvergov/en/denver-marijuana-information/statistics/licensing-and-locations.html" target="_top">than the city shows</a>, due to how address information is handled. The city counts one structure as one location regardless of the number of license-holders operating within it (for example, multiple units in one building). We counted multiple license-holders in one building as separate entities unless we could determine they were licensed as one entity.</p>
+                    <p id="overlapping-markers"><strong>A NOTE ABOUT OVERLAPPING MAP MARKERS</strong> If multiple entities of the same facility type operate at the same address (for example, several cultivation businesses located in different units in one building), the map markers will overlap and details for only one of the businesses will show. The separate businesses are included in the neighborhood totals. If multiple entities of different facility types operate at the same address, the map markers will overlap but will display when the facility type's map layer is toggled.</p>
+                    <p><em>*U.S. Census data is from the 2013 American Community Survey; income levels are median household income.</em></p> 
+                </div>
+            </div>
+        </div>
+        </div>
+
+    <script>
+        var neighborhoods = new L.LayerGroup();
+        var noStoresZoning = new L.LayerGroup();
+        var noManufacturersZoning = new L.LayerGroup();
+        var census = new L.LayerGroup();
+        var stores = new L.LayerGroup();
+        var cultivation = new L.LayerGroup();
+        var manufacturing = new L.LayerGroup();
+        var testFacilities = new L.LayerGroup();
+        var elementarySchools = new L.LayerGroup();
+        var middleSchools = new L.LayerGroup();
+        var highSchools = new L.LayerGroup();
+
+        var mapLink = '<a href="http://www.esri.com/">Esri<\/a>';
+        var wholink = 'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+
+        var light = L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/{type}/{mapID}/reduced.day/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}', {
+            attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+            subdomains: '1234',
+            mapID: 'newest',
+            app_id: '2K8wqfYF2CuD5D67HdQx',
+            app_code: '5PforzMWCWQoYPBUP-0p_A',
+            base: 'base',
+            maxZoom: 20,
+            type: 'maptile',
+            language: 'eng',
+            format: 'png8',
+            size: '256'
+        });
+
+        /* dark = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap<\/a> &copy; <a href="http://cartodb.com/attributions">CartoDB<\/a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+        }), */
+
+        /* streets = L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/{type}/{mapID}/normal.day.grey/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}', {
+            attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+            subdomains: '1234',
+            mapID: 'newest',
+            app_id: '2K8wqfYF2CuD5D67HdQx',
+            app_code: '5PforzMWCWQoYPBUP-0p_A',
+            base: 'base',
+            maxZoom: 20,
+            type: 'maptile',
+            language: 'eng',
+            format: 'png8',
+            size: '256'
+        }); */
+
+        streets = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
+            type: 'map',
+            ext: 'jpg',
+            attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest<\/a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap<\/a>',
+            subdomains: '1234'
+        }),
+
+        satellite = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; ' + mapLink + ', ' + wholink,
+            maxZoom: 18
+        });
+
+        var baseLayers = {
+            "Neighborhood map": light,
+            "Street map": streets,
+            "Satellite map": satellite
+        };
+
+        // grouped layer control from http://bl.ocks.org/ismyrnow/6123517
+        var groupedOverlays = {
+            "Background": {
+                "Neighborhoods": neighborhoods,
+                "Income levels": census,
+                "Zoning: No stores": noStoresZoning,
+                "Zoning: No manufacturers": noManufacturersZoning
+            },
+            "Facilities": {
+                "Stores": stores,
+                "Cultivation facilities": cultivation,
+                "Manufacturing facilities": manufacturing,
+                "Testing facilities": testFacilities
+            },
+            "Schools": {
+                "Elementary schools": elementarySchools,
+                "Middle schools": middleSchools,
+                "High schools": highSchools
+            }
+        };
+
+        // map from http://bl.ocks.org/awoodruff/3ce5d735126a56dfff94
+        // initialize the map
+        var map = L.map('map', {
+            center: [39.72, -104.94],
+            zoom: 12,
+            layers: [light, neighborhoods, stores, cultivation, manufacturing, testFacilities]
+        });
+
+        // below from http://maptimeboston.github.io/leaflet-intro/
+        $.getJSON("js/denver-neighborhoods-count-geojson.js", function(data) {
+            L.geoJson(data, {
+                style: function(feature) {
+                    var fillColor,
+                        density = feature.properties.count_all;
+                    if (density > 60) fillColor = "#a63603";
+                    else if (density > 40) fillColor = "#e6550d";
+                    else if (density > 20) fillColor = "#fd8d3c";
+                    else if (density > 10) fillColor = "#fdbe85";
+                    else if (density > 0) fillColor = "#feedde";
+                    else fillColor = "rgba(0,0,0,0)"; // no data
+                    return {
+                        color: "#000",
+                        weight: 1,
+                        fillColor: fillColor,
+                        fillOpacity: .6
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    layer.bindPopup(
+                    	'<strong>' + feature.properties.nbhd_name + '<br/>' 
+                        + feature.properties.count_all + '<\/strong>' + ' marijuana businesses' + '<hr/>'
+                    	+ 'Stores: ' + feature.properties.count_stores + '<br/>'
+                    	+ 'Cultivation: ' + feature.properties.count_cultivation + '<br/>'
+                    	+ 'Manufacturing: ' + feature.properties.count_manufacturing + '<br/>'
+                    	+ 'Testing: ' + feature.properties.count_testing
+                    )
+                }
+            }).addTo(neighborhoods);
+        });
+
+        $.getJSON("js/acs-2013-tract-geojson.js", function(data) {
+            L.geoJson(data, {
+                style: function(feature) {
+                    var fillColor,
+                        density = feature.properties.med_hh_inc;
+                    if (density > 100000) fillColor = "#54278f";
+                    else if (density > 75000) fillColor = "#756bb1";
+                    else if (density > 50000) fillColor = "#9e9ac8";
+                    else if (density > 25000) fillColor = "#cbc9e2";
+                    else if (density > 0) fillColor = "#f2f0f7";
+                    else fillColor = "rgba(0,0,0,0)"; // no data
+                    return {
+                        color: "#000",
+                        weight: 1,
+                        fillColor: fillColor,
+                        fillOpacity: .6
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    layer.bindPopup(
+                        '<strong>' + 'Tract No. ' + feature.properties.geo_name + '</strong><hr/>'
+                        + 'Median income: ' + '$' + feature.properties.med_hh_inc + '<br/>'
+                        + 'Population: ' + feature.properties.ttl_popula + '<br/>'
+                        + 'Pct. under 18: ' + feature.properties.ageless18_pct + '%'
+                    )
+                }
+            }).addTo(census);
+        });
+
+        $.getJSON("js/zoning-no-stores-geojson.js", function(data) {
+            L.geoJson(data, {
+                style: function(feature) {
+                    var fillColor,
+                        density = feature.properties.count_all;
+                    if (density > 60) fillColor = "#08519c";
+                    else if (density > 40) fillColor = "#3182bd";
+                    else if (density > 20) fillColor = "#6baed6";
+                    else if (density > 10) fillColor = "#bdd7e7";
+                    else if (density > 0) fillColor = "#eff3ff";
+                    else fillColor = "#ffffc2"; // no data
+                    return {
+                        color: "#000",
+                        weight: 1,
+                        fillColor: fillColor,
+                        fillOpacity: .6
+                    };
+                }
+            }).addTo(noStoresZoning);
+        });
+
+        $.getJSON("js/zoning-no-manufacturers-geojson.js", function(data) {
+            L.geoJson(data, {
+                style: function(feature) {
+                    var fillColor,
+                        density = feature.properties.count_all;
+                    if (density > 60) fillColor = "#08519c";
+                    else if (density > 40) fillColor = "#3182bd";
+                    else if (density > 20) fillColor = "#6baed6";
+                    else if (density > 10) fillColor = "#bdd7e7";
+                    else if (density > 0) fillColor = "#eff3ff";
+                    else fillColor = "#ffffc2"; // no data
+                    return {
+                        color: "#000",
+                        weight: 1,
+                        fillColor: fillColor,
+                        fillOpacity: .6
+                    };
+                }
+            }).addTo(noManufacturersZoning);
+        });
+
+        $.getJSON("js/stores-geojson.js", function(data) {
+            var mapIcon = L.divIcon({
+                //iconUrl: 'images/circle-red.png',
+                className: 'icon-store',
+                iconSize: [9, 9]
+                //iconAnchor: [6, 3],
+                //popupAnchor: [-1, -5]
+                // icons from https://www.iconfinder.com/icons/73019/ball_base_chartreuse_map_marker_right_tv_icon#size=32
+            });
+            L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    var marker = L.marker(latlng, {
+                        icon: mapIcon
+                    });
+                    marker.bindPopup(
+                    	feature.properties.Entity_Name 
+                    	+ '<br/>' 
+                    	+ ' dba '
+                        + feature.properties.Trade_Name
+                        + '<br/>'
+                        + feature.properties.Address
+                        + '<hr/>'
+                        + feature.properties.Facility_Type
+                    	+ ': ' 
+                    	+ feature.properties.Market_Served
+                    );
+                    return marker;
+                }
+            }).addTo(stores);
+        });
+
+        $.getJSON("js/cultivation-geojson.js", function(data) {
+            var mapIcon = L.divIcon({
+                //iconUrl: 'images/circle-yellow.png',
+                className: 'icon-cultivation',
+                iconSize: [9, 9]
+                //iconAnchor: [6, 3],
+                //popupAnchor: [-1, -5]
+                // icons from https://www.iconfinder.com/icons/73019/ball_base_chartreuse_map_marker_right_tv_icon#size=32
+            });
+            L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    var marker = L.marker(latlng, {
+                        icon: mapIcon
+                    });
+                    marker.bindPopup(
+                        feature.properties.Entity_Name 
+                        + '<br/>' 
+                        + ' dba '
+                        + feature.properties.Trade_Name
+                        + '<br/>'
+                        + feature.properties.Address
+                        + '<hr/>'
+                        + feature.properties.Facility_Type
+                        + ': ' 
+                        + feature.properties.Market_Served
+                    );
+                    return marker;
+                }
+            }).addTo(cultivation);
+        });
+
+        $.getJSON("js/manufacturing-geojson.js", function(data) {
+            var mapIcon = L.divIcon({
+                //iconUrl: 'images/circle-green.png',
+                className: 'icon-manufacturing',
+                iconSize: [9, 9]
+                //iconAnchor: [6, 3],
+                //popupAnchor: [-1, -5]
+                // icons from https://www.iconfinder.com/icons/73019/ball_base_chartreuse_map_marker_right_tv_icon#size=32
+            });
+            L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    var marker = L.marker(latlng, {
+                        icon: mapIcon
+                    });
+                    marker.bindPopup(
+                        feature.properties.Entity_Name 
+                        + '<br/>' 
+                        + ' dba '
+                        + feature.properties.Trade_Name
+                        + '<br/>'
+                        + feature.properties.Address
+                        + '<hr/>'
+                        + feature.properties.Facility_Type
+                        + ': ' 
+                        + feature.properties.Market_Served
+                    );
+                    return marker;
+                }
+            }).addTo(manufacturing);
+        });
+
+        $.getJSON("js/test-facilities-geojson.js", function(data) {
+            var mapIcon = L.divIcon({
+                //iconUrl: 'images/circle-blue.png',
+                className: 'icon-test-facility',
+                iconSize: [9, 9]
+                //iconAnchor: [6, 3],
+                //popupAnchor: [-1, -5]
+                // icons from https://www.iconfinder.com/icons/73019/ball_base_chartreuse_map_marker_right_tv_icon#size=32
+            });
+            L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    var marker = L.marker(latlng, {
+                        icon: mapIcon
+                    });
+                    marker.bindPopup(
+                        feature.properties.Entity_Name 
+                        + '<br/>' 
+                        + ' dba '
+                        + feature.properties.Trade_Name
+                        + '<br/>'
+                        + feature.properties.Address
+                        + '<hr/>'
+                        + feature.properties.Facility_Type
+                        + ': ' 
+                        + feature.properties.Market_Served
+                    );
+                    return marker;
+                }
+            }).addTo(testFacilities);
+        });
+
+        $.getJSON("js/denver-schools-elementary-geojson.js", function(data) {
+            var mapIcon = L.icon({
+                iconUrl: 'images/elementary-school.png',
+                iconSize: [20, 20],
+                iconAnchor: [6, 3],
+                popupAnchor: [3, 0]
+                // icons from https://www.iconfinder.com/icons/73019/ball_base_chartreuse_map_marker_right_tv_icon#size=32
+            });
+            L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    var marker = L.marker(latlng, {
+                        icon: mapIcon
+                    });
+                    marker.bindPopup(
+                        '<strong>' + feature.properties.school + '</strong>'
+                        + '<br/>' + feature.properties.school_type + ' School'
+                        + '<hr/>' 
+                        + feature.properties.street
+                        + '<br/>'
+                        + feature.properties.city + ' ' + feature.properties.zip
+                    );
+                    return marker;
+                }
+            }).addTo(elementarySchools);
+        });
+
+        $.getJSON("js/denver-schools-middle-geojson.js", function(data) {
+            var mapIcon = L.icon({
+                iconUrl: 'images/middle-school.png',
+                iconSize: [20, 20],
+                iconAnchor: [6, 3],
+                popupAnchor: [3, 0]
+                // icons from https://www.iconfinder.com/icons/73019/ball_base_chartreuse_map_marker_right_tv_icon#size=32
+            });
+            L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    var marker = L.marker(latlng, {
+                        icon: mapIcon
+                    });
+                    marker.bindPopup(
+                        '<strong>' + feature.properties.school + '</strong>'
+                        + '<br/>' + feature.properties.school_type + ' School'
+                        + '<hr/>' 
+                        + feature.properties.street
+                        + '<br/>'
+                        + feature.properties.city + ' ' + feature.properties.zip
+                    );
+                    return marker;
+                }
+            }).addTo(middleSchools);
+        });
+
+        $.getJSON("js/denver-schools-high-geojson.js", function(data) {
+            var mapIcon = L.icon({
+                iconUrl: 'images/high-school.png',
+                iconSize: [20, 20],
+                iconAnchor: [6, 3],
+                popupAnchor: [3, 0]
+                // icons from https://www.iconfinder.com/icons/73019/ball_base_chartreuse_map_marker_right_tv_icon#size=32
+            });
+            L.geoJson(data, {
+                pointToLayer: function(feature, latlng) {
+                    var marker = L.marker(latlng, {
+                        icon: mapIcon
+                    });
+                    marker.bindPopup(
+                        '<strong>' + feature.properties.school + '</strong>'
+                        + '<br/>' + feature.properties.school_type + ' School'
+                        + '<hr/>' 
+                        + feature.properties.street
+                        + '<br/>'
+                        + feature.properties.city + ' ' + feature.properties.zip
+                    );
+                    return marker;
+                }
+            }).addTo(highSchools);
+        });
+
+        L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
+    </script>
+    <script src="http://extras.denverpost.com/foundation/js/foundation.min.js"></script>
+    <script>
+       $(document).foundation();
+    </script>
+</body>
+</html>
