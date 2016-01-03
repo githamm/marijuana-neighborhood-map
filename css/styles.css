@@ -82,14 +82,14 @@ ul.legend {
 .legend .step-1 {
     background-color: #feedde;
 }
-hr {
+hr.popup {
     margin: 5px 0px 5px 0px;
 }
 hr.not-popup {
     margin-bottom: 18px;
 }
-h1 {
-    font-family: 'Oswald', sans-serif !important;
+h1.intro {
+    font-family: 'Oswald', sans-serif;
     font-size: 42px;
     font-weight: 700;
     letter-spacing: 1px;
